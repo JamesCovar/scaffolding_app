@@ -1,7 +1,7 @@
 import { useSignIn } from "@clerk/nextjs";
 import { Button, Input } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
-import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 interface SignInProps {
@@ -9,6 +9,7 @@ interface SignInProps {
 }
 
 export default function SignIn({ setShowForgotEmail }: SignInProps) {
+  const [isLoading, setIsLoading] = useState(false);
   const { signIn, isLoaded } = useSignIn();
   const {
     control,
@@ -16,23 +17,30 @@ export default function SignIn({ setShowForgotEmail }: SignInProps) {
     formState: { errors },
     setError,
   } = useForm();
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect_url");
 
   const handleSignIn = async (formValues: FieldValues) => {
     if (!isLoaded) return;
 
     const { email, password } = formValues;
-
+    setIsLoading(true);
     try {
       await signIn.create({
         identifier: email,
         password: password,
+        actionCompleteRedirectUrl: redirect || "/",
       });
-      router.push("/");
+
+      //TODO: Bad practice, review why middleware is blocking the first redirection after login
+      setTimeout(() => {
+        window.location.href = redirect || "/";
+      }, 1000);
+      setIsLoading(false);
     } catch (e: any) {
       const errorCode = e.errors[0].code;
       let errorMessage = "";
-      console.log(errorCode);
+      console.log(e);
       if (errorCode === "form_password_incorrect") {
         errorMessage =
           "Password or email is incorrect. Try again, or use another method.";
@@ -40,6 +48,7 @@ export default function SignIn({ setShowForgotEmail }: SignInProps) {
         return setError("password", { message: errorMessage });
       }
       setError("email", { message: errorMessage });
+      setIsLoading(false);
     }
   };
 
@@ -80,7 +89,9 @@ export default function SignIn({ setShowForgotEmail }: SignInProps) {
           />
         )}
       ></Controller>
-      <Button onClick={handleSubmit(handleSignIn)}>Sign In</Button>
+      <Button onClick={handleSubmit(handleSignIn)} isLoading={isLoading}>
+        Sign In
+      </Button>
       <div className="text-center">
         <span
           className="underline text-xs cursor-pointer"

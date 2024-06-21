@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 import OtpCode from "./OtpCode";
 import { useSession } from "@clerk/nextjs";
 import ForgotEmail from "./ForgotEmail";
+import { useRouter } from "next/navigation";
 
 export const Login = () => {
   const [showOTP, setShowOTP] = useState(false);
   const [showForgotEmail, setShowForgotEmail] = useState(false);
   const [email, setEmail] = useState("");
-  const { isLoaded, session, isSignedIn } = useSession();
 
   return (
     <Tabs aria-label="Options" classNames={{ tabList: "w-full" }}>
