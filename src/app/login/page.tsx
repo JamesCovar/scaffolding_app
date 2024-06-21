@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { Button } from "@nextui-org/react";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import Google from "@/components/socials/Google";
 
 export default function Login() {
   const { userId } = auth();
@@ -32,9 +33,7 @@ export default function Login() {
             <hr className="text-black flex-1 flex"></hr>
           </div>
           <div>
-            <Button isIconOnly radius="full" variant="bordered" size="md">
-              <FcGoogle fontSize={"22px"} />
-            </Button>
+            <Google />
           </div>
         </div>
       </div>

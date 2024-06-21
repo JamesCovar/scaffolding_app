@@ -15,7 +15,6 @@ export default function SignIn({ setShowForgotEmail }: SignInProps) {
     handleSubmit,
     formState: { errors },
     setError,
-    clearErrors,
   } = useForm();
   const router = useRouter();
 
@@ -31,18 +30,16 @@ export default function SignIn({ setShowForgotEmail }: SignInProps) {
       });
       router.push("/");
     } catch (e: any) {
-      console.log(e);
+      const errorCode = e.errors[0].code;
       let errorMessage = "";
-      if (e.errors[0].code === "form_password_incorrect")
+      console.log(errorCode);
+      if (errorCode === "form_password_incorrect") {
         errorMessage =
-          "Oops! The email or password you entered is incorrect. Please try again";
-
-      if (errorMessage !== "") {
-        setError("password", {
-          message: errorMessage,
-        });
+          "Password or email is incorrect. Try again, or use another method.";
         setError("email", { message: "" });
+        return setError("password", { message: errorMessage });
       }
+      setError("email", { message: errorMessage });
     }
   };
 
