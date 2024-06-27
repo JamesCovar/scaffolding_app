@@ -15,9 +15,18 @@ datasource db {
 
 model user {
   id  String  @id @default(uuid())
-  name String 
-  lastName String
-  email String
+  name String? 
+  lastName String?
+  email String @unique
   phone String?
-  clerkId String 
+  clerkId String @unique
+  imageUrl String?
+  provider Provider @default(PASSWORD)
+  secondaryEmail String[]
 }
+
+enum Provider {
+  PASSWORD
+  GOOGLE
+}
+
